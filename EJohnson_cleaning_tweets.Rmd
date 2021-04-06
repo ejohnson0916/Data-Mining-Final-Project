@@ -1,0 +1,117 @@
+---
+title: "Cleaning Tweets CSV"
+Author: "Ean Johnson"
+output: html_notebook
+---
+
+## Import Libraries
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(data.table)
+
+```
+
+## Remove Scietific Notation & Set character encoding
+```{r}
+options(scipen = 999)
+```
+
+## Import Data
+```{r}
+raw_tweets <- read.csv(here::here("data", "Tweets-1.csv"), header = TRUE, stringsAsFactors = FALSE) %>% janitor::clean_names()
+
+
+fread(here::here("data", "Tweets-1.csv"))
+
+str(raw_tweets)
+
+raw_tweets$text[1:10]
+
+```
+## Cleaning to-do 
+1.tweet_id - Check tweet_id for duplicates - ensure each value is unique
+
+2. airline_sentiment - Check all possible values of airline_senitment to ensure consistency
+
+3. negative_reason - What kind of formatting are we looking for in negative reason. - Will this be used in analysis/What formatting is needed?
+
+5. General question - How are we going to deal with missing values? What percentage of values are missing for each column? 
+
+6. Text - need to remove "@VirginAmerica", special characters need to be removed/edited. 
+
+7. Text - Stemming? Lemmatization? 
+
+8. tweet_coord - Will this be used? If so what format? Break into two columns? 
+
+9. tweet_created - Change to date type 
+
+
+## Checking tweet id 
+```{r}
+raw_tweets %>%
+  group_by(tweet_id) %>%
+  tally()
+
+```
+Only 3 different values for tweet_id. Need to create unique_id for each tweet. 
+
+## Check airline sentiment
+```{r}
+
+raw_tweets %>%
+  group_by(airline_sentiment) %>%
+  tally()
+
+```
+Seems good, if we want to use
+
+## Check airline_sentiment_confidence
+```{r}
+summary(raw_tweets$airline_sentiment_confidence)
+```
+## Check negativereason_confidence
+```{r}
+summary(raw_tweets$negativereason_confidence)
+```
+4118 NA's is a lot - Probably can't just remove all these values if we want to use. Might need to substitute average or something along those lines. 
+
+
+
+## Check airlinesentiment_gold
+Sidenote - what is this? 
+```{r}
+raw_tweets %>%
+  group_by(airline_sentiment_gold) %>%
+  tally()
+```
+Only 40 values, probably not useful 
+
+## negativereason_gold
+```{r}
+raw_tweets %>%
+  group_by(negativereason_gold) %>%
+  tally()
+
+```
+Not many values here. Can we use these? Need to remove "\n" if so.
+
+
+## retweet_count 
+```{r}
+raw_tweets %>%
+  ggplot(aes(retweet_count)) +
+  geom_histogram()
+```
+Mostly 0's 
+
+## Cleaning text 
+```{r}
+
+
+```
+Change to UTF-8 - Usually standard for internet text 
+
+
+
